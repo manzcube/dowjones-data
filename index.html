@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="index.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Get Numbers</title>
+</head>
+<body>
+  <div class="m-10">
+    <p class="text-muted text-gray-600 text-sm">In the last 7800 trading days. If the Friday was unable to go above previous Thursday, how high the odds are that the next Monday will go below Friday's low?</p>
+    <button id="getNumbers" type="button" class="button bg-gray-800 font-bold text-white text-xs px-2 py-1 my-3 rounded-md active:scale-95 outline-none">Loop DOW</button>
+    <div id="result" class="text-sm bg-gray-100 p-3 text-gray-700 rounded"></div>
+  </div>
+
+  
+  <script>
+    const { spawn } = require("child_process");
+    const button = document.getElementById("getNumbers");
+    const resultDiv = document.getElementById("result");
+
+    button.addEventListener("click", async () => {
+      const python = spawn("python", ["loop_dow.py"]);
+      try {
+        await python.stdout.on("data", (result) => {
+          const { counter, counter2 } = JSON.parse(result);
+          resultDiv.innerHTML = `The condition was satisfied ${counter} times. And from that, a total of ${counter2} days, Monday went below Friday's low.`;
+        });
+      } catch (err) {
+        resultDiv.innerHTML += `${err.message}`;
+      }
+    })
+  </script>
+</body>
+</html>
